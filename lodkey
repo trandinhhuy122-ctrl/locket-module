@@ -1,0 +1,94 @@
+# RevenueCat Response
+revenuecat = type=http-response, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts$|subscribers\/[^/]+$), script-path=https://raw.githubusercontent.com/NightmarketServer/Module-Shadowrocket-NMS/refs/heads/main/Module-Shadowrocket-NMS/Locket%20Gold/locketfix8.js, requires-body=true, max-size=-1, timeout=60
+
+# RevenueCat Request Header
+deleteHeader = type=http-request, pattern=^https:\/\/api\.revenuecat\.com\/.+\/(receipts|subscribers), script-path=https://raw.githubusercontent.com/NightmarketServer/Module-Shadowrocket-NMS/refs/heads/main/Module-Shadowrocket-NMS/Locket%20Gold/header7.js, timeout=60
+
+# Locket Firebase Remote Config
+locket_rc = type=http-response, pattern=^https:\/\/firebaseremoteconfig\.googleapis\.com\/v1\/projects\/locket-4252a\/.+, script-path=https://raw.githubusercontent.com/NightmarketServer/Module-Shadowrocket-NMS/refs/heads/main/Module-Shadowrocket-NMS/Locket%20Gold/forceGold4.2.js, requires-body=true, max-size=-1, timeout=60
+
+[MITM]
+hostname = %APPEND%, api.revenuecat.com, firebaseremoteconfig.googleapis.com
+/**
+ * Locket Gold Premium Ultimate Script
+ * Hỗ trợ mở khóa toàn bộ tính năng: Gửi ảnh chất lượng cao, Phản hồi vô hạn, Chế độ xem đặc biệt, Biểu tượng VIP.
+ */
+
+const url = $request.url;
+let body = $response.body;
+
+if (!body) {
+    $done({});
+} else {
+    let obj = JSON.parse(body);
+
+    // 1. Xử lý yêu cầu từ hệ thống xác thực RevenueCat
+    if (url.indexOf("://revenuecat.com") !== -1) {
+        if (obj.subscriber) {
+            // Định nghĩa gói dữ liệu Premium giả lập cao cấp nhất
+            const premiumData = {
+                "expires_date": "2099-12-31T23:59:59Z",
+                "original_purchase_date": "2024-01-01T00:00:00Z",
+                "purchase_date": "2024-01-01T00:00:00Z",
+                "ownership_type": "PURCHASED",
+                "store": "app_store",
+                "is_sandbox": false
+            };
+
+            const entitlementData = {
+                "expires_date": "2099-12-31T23:59:59Z",
+                "original_purchase_date": "2024-01-01T00:00:00Z",
+                "purchase_date": "2024-01-01T00:00:00Z",
+                "product_identifier": "com.locket.gold.yearly"
+            };
+
+            // Khởi tạo nếu object trống
+            obj.subscriber.subscriptions = obj.subscriber.subscriptions || {};
+            obj.subscriber.entitlements = obj.subscriber.entitlements || {};
+
+            // Danh sách toàn bộ các Product ID & Entitlement ID đã và đang được Locket sử dụng
+            const goldIdentifiers = [
+                "gold",
+                "locket_gold",
+                "locket_premium",
+                "locket_gold_yearly",
+                "locket_gold_monthly",
+                "com.locket.gold",
+                "com.locket.gold.yearly",
+                "com.locket.premium"
+            ];
+
+            // Ép tất cả các định danh trên thành trạng thái kích hoạt VIP
+            goldIdentifiers.forEach(id => {
+                obj.subscriber.subscriptions[id] = premiumData;
+                obj.subscriber.entitlements[id] = entitlementData;
+            });
+
+            // Đồng bộ thông tin người dùng để tránh lỗi lệch bộ nhớ đệm ứng dụng
+            obj.subscriber.original_purchase_date = "2024-01-01T00:00:00Z";
+            obj.subscriber.original_application_version = "1.0";
+            
+            body = JSON.stringify(obj);
+        }
+    } 
+    
+    // 2. Xử lý yêu cầu từ API cấu hình nội bộ của Locket (Mở khóa tính năng thử nghiệm)
+    else if (url.indexOf("api.locket.camera/v1/config") !== -1) {
+        // Ép các cờ tính năng (Feature Flags) của hệ thống sang trạng thái bật (True)
+        if (obj.features) {
+            for (let key in obj.features) {
+                if (typeof obj.features[key] === "boolean") {
+                    obj.features[key] = true;
+                }
+            }
+        }
+        // Kích hoạt các tính năng thử nghiệm đặc biệt (Beta features)
+        obj.gold_enabled = true;
+        obj.premium_enabled = true;
+        obj.experimental_features_enabled = true;
+        
+        body = JSON.stringify(obj);
+    }
+
+    $done({ body });
+}
