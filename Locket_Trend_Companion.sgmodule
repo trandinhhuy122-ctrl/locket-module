@@ -1,0 +1,35 @@
+
+#!name=Locket Trend Companion
+#!desc=Cong cu ho tro Locket iPhone - caption va kiem tra tinh nang
+#!author=Independent Project
+
+[General]
+# Khong thay doi User-Agent cua Locket
+# Khong sua phan hoi xac thuc tai khoan
+
+[Script]
+# Caption trend tieng Viet:
+# 1. Nay dep nen dang, mai tinh tiep.
+# 2. Camera thu lai, ky uc giu lai.
+# 3. It noi, nhieu anh.
+# 4. Hom nay on ap theo cach rieng.
+# 5. Dang cho vui, ai ngo xinh that.
+# 6. Mot chut binh yen, mot chut la toi.
+# 7. Khong can dien, chi can dung khoanh khac.
+# 8. Mood hom nay: xuat hien mot chut roi bien mat.
+# 9. Luu mot ngay binh thuong thanh mot ngay dang nho.
+# 10. Cuoc song nho nho, niem vui to to.
+
+# Kiem tra video 60 giay:
+# Thu quay truc tiep trong ung dung Locket.
+# Module khong tu mo khoa gioi han video.
+
+# Kiem tra Gold:
+# Xem trang Gold va lich su dang ky trong Locket/App Store.
+
+# Kiem tra xac minh:
+# Chi tin trang thai hien thi tu dich vu chinh thuc.
+
+[MITM]
+# Khong can thiệp API thanh toan
+# Khong sua phan hoi Firebase
